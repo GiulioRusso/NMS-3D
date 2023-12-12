@@ -22,7 +22,7 @@ The project consists of the following components:
 
 Run the main() function in NMS-3D.py:
 
-python nms_3d.py
+python NMS-3D.py
 
 This will read bounding box coordinates from bbox-coords-before-nms-3d.csv, perform 3D NMS, and save the result to bbox-coords-after-nms-3d.csv. It will also generate 3D plots before and after NMS, saving them as HTML files.
 
