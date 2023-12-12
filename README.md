@@ -20,7 +20,7 @@ The project consists of the following components:
 
 ## Run
 
-Run the main() function in nms_3d.py:
+Run the main() function in NMS-3D.py:
 
 python nms_3d.py
 
