@@ -2,6 +2,8 @@
 
 This is an example implementation of 3D non-maximum suppression (NMS) for bounding boxes using PyTorch and Plotly.
 
+![Example](image.png)
+
 ## Files
 
 The project consists of the following components:
