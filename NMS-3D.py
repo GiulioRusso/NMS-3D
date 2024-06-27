@@ -109,6 +109,7 @@ def nms_3d(prediction_boxes, iou_threshold, debug):
     :param prediction_boxes: tensor containing bounding box coordinates and scores.
                                            each row should have the format ['SCORE', 'X MIN', 'Y MIN', 'Z MIN', 'X MAX', 'Y MAX', 'Z MAX'].
     :param iou_threshold: intersection over union threshold between 0 and 1.
+    :param debug: verbose print about the boxes suppression
 
     :return: tensor containing the best bounding boxes selected by non-maximum suppression.
     """
