@@ -1,24 +1,22 @@
 import sys
 import os
-import pandas as pd
 import torch
-from pandas import read_csv
 import plotly.graph_objects as go
 
 
-def plot_3d_boxes(boxes_df, title, save_html=False, html_filename="plot_3d_boxes.html"):
+def plot_3d_boxes(boxes_df, title="Plot 3D boxes", save_html=False, html_filename_path="plot_3d_boxes.html"):
     """
-    Create a 3D plot of bounding boxes
+    Create a 3D plot with the bounding boxes
 
-    :param: boxes_df: DataFrame containing bounding box coordinates.
-    :param: title: Title of the plot.
-    :param save_html: Flag indicating whether to save the plot in an HTML file.
-    :param html_filename: Name of the HTML file to save (default: "plot_3d_boxes.html").
+    :param: boxes_df: DataFrame containing 3D bounding box coordinates with columns ['X MIN', 'Y MIN', 'Z MIN', 'X MAX', 'Y MAX', 'Z MAX'].
+    :param: title: Title of the plot. Default is "Plot 3D boxes".
+    :param save_html: whether to save the plot in an HTML file. Default is False.
+    :param html_filename_path: Name of the HTML file to save. Default is "plot_3d_boxes.html".
     """
 
     fig = go.Figure()
 
-    for index, row in boxes_df.iterrows():
+    for _, row in boxes_df.iterrows():
         vertices = [
             [row['X MIN'], row['Y MIN'], row['Z MIN']],
             [row['X MAX'], row['Y MIN'], row['Z MIN']],
@@ -94,28 +92,27 @@ def plot_3d_boxes(boxes_df, title, save_html=False, html_filename="plot_3d_boxes
 
     if save_html:
         # save the plot as an HTML file
-        html_filepath = os.path.abspath(html_filename)
-        fig.write_html(html_filepath)
-        print(f"Plot saved as HTML: {html_filepath}")
+        html_filename_path = os.path.abspath(html_filename_path)
+        fig.write_html(html_filename_path)
+        print(f"Plot saved as HTML: {html_filename_path}")
     else:
         # show the plot in the default viewer
         fig.show()
 
 
-def nms_3d(prediction_boxes, iou_threshold, debug):
+def nms_3d(prediction_boxes, iou_threshold=0.5, debug=False):
     """
-    Perform 3D non-maximum suppression on a set of bounding boxes.
+    Perform 3D Non-Maximum Suppression on a set of bounding boxes.
 
-    :param prediction_boxes: tensor containing bounding box coordinates and scores.
-                                           each row should have the format ['SCORE', 'X MIN', 'Y MIN', 'Z MIN', 'X MAX', 'Y MAX', 'Z MAX'].
-    :param iou_threshold: intersection over union threshold between 0 and 1.
-    :param debug: verbose print about the boxes suppression
+    :param prediction_boxes: tensor containing bounding box coordinates and scores. Each row should have the format: 'SCORE', 'X MIN', 'Y MIN', 'Z MIN', 'X MAX', 'Y MAX', 'Z MAX'.
+    :param iou_threshold: intersection over union threshold between 0 and 1. Default is 0.5
+    :param debug: verbose print about the boxes suppression. Default is False
 
     :return: tensor containing the best bounding boxes selected by non-maximum suppression.
     """
     # check for valid iou threshold
     if not (0 < iou_threshold < 1):
-        sys.exit("ERROR: iou_threshold must be between 0 and 1. got {} instead".format(iou_threshold))
+        sys.exit("ERROR: iou_threshold must be between 0 and 1. Got {} instead".format(iou_threshold))
 
     best_boxes_hist = []
 
@@ -172,44 +169,3 @@ def nms_3d(prediction_boxes, iou_threshold, debug):
         prediction_boxes = prediction_boxes[~iou_threshold_mask]
 
     return torch.stack(best_boxes_hist)
-
-
-def main():
-    print("| ---------------------------------- |\n"
-          "| Non-Maximum Suppression 3D example |\n"
-          "| ---------------------------------- |\n")
-
-    # ----------- #
-    # READ COORDS #
-    # ----------- #
-    # read bounding box coordinates from a .csv file
-    prediction_boxes_df = read_csv('bbox-coords-before-nms-3d.csv')
-    iou_threshold = 0.5
-
-    # convert DataFrame to PyTorch tensors
-    prediction_boxes = torch.tensor(prediction_boxes_df.values, dtype=torch.float32)
-
-    # --- #
-    # NMS #
-    # --- #
-    # perform 3D non-maximum suppression
-    best_boxes = nms_3d(prediction_boxes, iou_threshold, True)
-
-    # convert the tensor back to DataFrame after NMS
-    best_boxes_df = pd.DataFrame(best_boxes.numpy(), columns=['SCORE', 'X MIN', 'Y MIN', 'Z MIN', 'X MAX', 'Y MAX', 'Z MAX'])
-
-    # save the result into a CSV file
-    best_boxes_df.to_csv('bbox-coords-after-nms-3d.csv', index=False)
-
-    # ---- #
-    # DRAW #
-    # ---- #
-    # call the function to draw prediction_boxes_df
-    plot_3d_boxes(prediction_boxes_df, 'Prediction Boxes Before NMS', save_html=True, html_filename='prediction_boxes_before_nms.html')
-
-    # call the function to draw best_boxes_df
-    plot_3d_boxes(best_boxes_df, 'Best Boxes After NMS', save_html=True, html_filename='best_boxes_after_nms.html')
-
-
-if __name__ == "__main__":
-    main()
