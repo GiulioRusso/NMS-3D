@@ -15,7 +15,7 @@ def main():
     # READ COORDS #
     # ----------- #
     # read bounding box coordinates from a .csv file
-    prediction_boxes_df = read_csv(filepath_or_buffer='bbox-coords-before-nms-3d.csv')
+    prediction_boxes_df = read_csv(filepath_or_buffer='./bbox-coords/bbox-coords-before-nms-3d.csv')
     iou_threshold = 0.5
 
     # convert DataFrame to PyTorch tensors
@@ -35,7 +35,7 @@ def main():
                                  columns=['SCORE', 'X MIN', 'Y MIN', 'Z MIN', 'X MAX', 'Y MAX', 'Z MAX'])
 
     # save the result into a CSV file
-    best_boxes_df.to_csv(path_or_buf='bbox-coords-after-nms-3d.csv',
+    best_boxes_df.to_csv(path_or_buf='./bbox-coords/bbox-coords-after-nms-3d.csv',
                          index=False)
 
     # ---- #
@@ -45,13 +45,13 @@ def main():
     plot_3d_boxes(boxes_df=prediction_boxes_df,
                   title='Prediction Boxes Before NMS',
                   save_html=True,
-                  html_filename_path='prediction_boxes_before_nms.html')
+                  html_filename_path='./output/prediction_boxes_before_nms.html')
 
     # call the function to draw best_boxes_df
     plot_3d_boxes(boxes_df=best_boxes_df,
                   title='Best Boxes After NMS',
                   save_html=True,
-                  html_filename_path='best_boxes_after_nms.html')
+                  html_filename_path='./output/best_boxes_after_nms.html')
 
 
 if __name__ == "__main__":
