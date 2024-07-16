@@ -2,7 +2,7 @@
 
 This is an example implementation of 3D non-maximum suppression (NMS-3D) for bounding boxes using PyTorch and Plotly.
 
-![Example](NMS-image-example.png)
+![Example](./output/NMS-image-example.png)
 
 ## Files
 
@@ -15,10 +15,14 @@ The project consists of the following Python scripts:
 
 The following .csv and .html files are used for the application example in main.py:
 
-- **bbox-coords-before-nms-3d.csv**: example file of bounding boxes to suppress.
-- **bbox-coords-after-nms-3d.csv**: output file after the application of the 3D NMS on bbox-coords-before-nms-3d.csv file.
-- **best_boxes_after_nms.html**: .html view of the boxes after the 3D NMS.
-- **best_boxes_after_nms.html**: .html view of the boxes before the 3D NMS.
+- **bbox-coords**: The folder that contains the boundig box .csv files before and after the 3D Non-Maximum Suppression.
+    - **bbox-coords-before-nms-3d.csv**: example file of bounding boxes to suppress.
+    - **bbox-coords-after-nms-3d.csv**: output file after the application of the 3D NMS on bbox-coords-before-nms-3d.csv file.
+
+- **output**: The folder that cointains the .html visualization of the boxes before and after the 3D Non-Maximum Suppression.
+    - **best_boxes_after_nms.html**: .html view of the boxes after the 3D NMS.
+    - **best_boxes_after_nms.html**: .html view of the boxes before the 3D NMS.
+    - **NMS-image-example.png**: example image used in this README.md file
 
 
 ## Requirements
