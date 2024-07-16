@@ -1,10 +1,15 @@
 import sys
 import os
 import torch
+import pandas as pd
+from typing import Union
 import plotly.graph_objects as go
 
 
-def plot_3d_boxes(boxes_df, title="Plot 3D boxes", save_html=False, html_filename_path="plot_3d_boxes.html"):
+def plot_3d_boxes(boxes_df: pd.DataFrame, 
+                  title: str = "Plot 3D boxes", 
+                  save_html: bool = False, 
+                  html_filename_path: Union[str, None] = "plot_3d_boxes.html") -> None:
     """
     Create a 3D plot with the bounding boxes
 
@@ -100,7 +105,9 @@ def plot_3d_boxes(boxes_df, title="Plot 3D boxes", save_html=False, html_filenam
         fig.show()
 
 
-def nms_3d(prediction_boxes, iou_threshold=0.5, debug=False):
+def nms_3d(prediction_boxes: torch.Tensor, 
+           iou_threshold: float = 0.5, 
+           debug: bool = False) -> torch.Tensor:
     """
     Perform 3D Non-Maximum Suppression on a set of bounding boxes.
 
