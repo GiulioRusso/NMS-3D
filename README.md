@@ -4,7 +4,7 @@ This is an example implementation of 3D non-maximum suppression (NMS-3D) for bou
 
 ![Example](./output/NMS-image-example.png)
 
-## Files
+## File organization
 
 The project consists of the following Python scripts:
 
