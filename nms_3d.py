@@ -60,6 +60,18 @@ def plot_3d_boxes(boxes_df: pd.DataFrame,
             ))
 
         # define the faces
+        #                 
+        #     6 • - - - - • 5
+        #      /|        /|
+        #     / |       / |
+        #  7 • - - - - • 4|
+        #    |  |      |  |
+        #    |  |      |  | 
+        #    |2 • - - -|- • 1
+        #    | /       | /
+        #    |/        |/
+        #  3 • - - - - • 0
+        # 
         triangular_face = [
             [0, 1, 2],  # first triangle face bottom
             [0, 2, 3],  # second triangle face bottom
@@ -73,7 +85,7 @@ def plot_3d_boxes(boxes_df: pd.DataFrame,
             [0, 4, 7],  # second triangle lateral 3
             [1, 2, 6],  # first triangle lateral 4 (opposite to lateral 3)
             [1, 5, 6],  # second triangle lateral 4 (opposite to lateral 3)
-        ]
+        ]              
 
         # add a trace for the filled faces
         fig.add_trace(go.Mesh3d(x=[v[0] for v in vertices],
