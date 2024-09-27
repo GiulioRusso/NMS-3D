@@ -13,7 +13,7 @@ def plot_3d_boxes(boxes: torch.Tensor,
     """
     Create a 3D plot with the bounding boxes.
 
-    :param boxes: tensor containing 3D bounding box coordinates with columns 'X MIN', 'Y MIN', 'Z MIN', 'X MAX', 'Y MAX', 'Z MAX'.
+    :param boxes: tensor containing 3D bounding box coordinates with columns 'SCORE', 'X MIN', 'Y MIN', 'Z MIN', 'X MAX', 'Y MAX', 'Z MAX'.
     :param title: title of the plot. Default is "Plot 3D boxes".
     :param save_html: whether to save the plot in an HTML file. Default is False.
     :param html_filename_path: name of the HTML file to save. Default is "./plot_3d_boxes.html".
