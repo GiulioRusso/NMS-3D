@@ -14,7 +14,7 @@ def main():
     # ----------- #
     # read bounding box coordinates from a .csv file and convert to tensor
     prediction_boxes_df = read_csv(filepath_or_buffer='./bbox-coords/bbox-coords-before-nms-3d.csv')
-    iou_threshold = 0.5
+    iou_threshold = 0.25
 
     # convert the DataFrame to PyTorch tensor
     prediction_boxes = torch.tensor(prediction_boxes_df.values, dtype=torch.float32)
@@ -41,13 +41,17 @@ def main():
     plot_3d_boxes(boxes=prediction_boxes,
                   title='Prediction Boxes Before NMS',
                   save_html=True,
-                  html_filename_path='./output/prediction_boxes_before_nms.html')
+                  html_filename_path='./output/prediction_boxes_before_nms.html',
+                  color=(255, 0, 0, 0.5),
+                  show_scores=True)
 
     # call the function to draw best_boxes_tensor (after NMS)
     plot_3d_boxes(boxes=best_boxes,
                   title='Best Boxes After NMS',
                   save_html=True,
-                  html_filename_path='./output/best_boxes_after_nms.html')
+                  html_filename_path='./output/best_boxes_after_nms.html',
+                  color=(255, 0, 0, 0.5),
+                  show_scores=True)
 
 
 if __name__ == "__main__":
