@@ -1,7 +1,7 @@
 # nms_3d/nms_3d.py
 
 import torch
-import sys
+import logging
 
 
 def nms_3d(prediction_boxes: torch.Tensor, 
@@ -9,16 +9,31 @@ def nms_3d(prediction_boxes: torch.Tensor,
            debug: bool = False) -> torch.Tensor:
     """
     Perform 3D Non-Maximum Suppression on a set of bounding boxes.
-
-    :param prediction_boxes: tensor containing bounding box coordinates and scores. Each row should have the format: 'SCORE', 'X MIN', 'Y MIN', 'Z MIN', 'X MAX', 'Y MAX', 'Z MAX'.
-    :param iou_threshold: intersection over union threshold between 0 and 1. Default is 0.5
-    :param debug: verbose print about the boxes suppression. Default is False
-
-    :return: tensor containing the best bounding boxes selected by non-maximum suppression.
+    
+    :param prediction_boxes: Tensor of shape (N, 7), where N is the number of bounding boxes. 
+                             Each row should be of format: 'SCORE', 'X MIN', 'Y MIN', 'Z MIN', 'X MAX', 'Y MAX', 'Z MAX'.
+    :param iou_threshold: Intersection over union threshold between 0 and 1. Default is 0.5.
+    :param debug: Verbose print about the boxes suppression. Default is False.
+    
+    :return: Tensor containing the selected bounding boxes after applying NMS.
     """
-    # check for valid iou threshold
-    if not (0 < iou_threshold < 1):
-        sys.exit("ERROR: iou_threshold must be between 0 and 1. Got {} instead".format(iou_threshold))
+    # configure logging
+    if debug:
+        logging.basicConfig(level=logging.DEBUG)
+    else:
+        logging.basicConfig(level=logging.INFO)
+
+    # input validation
+    if not isinstance(prediction_boxes, torch.Tensor):
+        prediction_boxes = torch.tensor(prediction_boxes)
+
+    if prediction_boxes.ndim != 2 or prediction_boxes.size(1) != 7:
+        raise ValueError(f"prediction_boxes must be of shape (N, 7) formatted as: 'SCORE', 'X MIN', 'Y MIN', 'Z MIN', 'X MAX', 'Y MAX', 'Z MAX'. Got {prediction_boxes.shape} instead")
+
+    # check iou value
+    if not (0 <= iou_threshold <= 1):
+        raise ValueError(f"iou_threshold must be between 0 and 1. Got {iou_threshold} instead")
+
 
     best_boxes_hist = []
 
@@ -68,7 +83,8 @@ def nms_3d(prediction_boxes: torch.Tensor,
             print(f"Highest Score Box: SCORE={highest_score_box[0]:.4f} / BOX={highest_score_box[1:].tolist()}")
             for i in range(len(iou_threshold_boxes)):
                 suppressed_box = iou_threshold_boxes[i]
-                print(f"Suppressed Box: SCORE={suppressed_box[0]:.4f} / BOX={suppressed_box[1:].tolist()} / IoU={iou_values[i]:.4f}")
+                if (int(iou_values[i]) != 1): # exclude from debug print the intersection between the highest score and itself
+                    print(f"Suppressed Box: SCORE={suppressed_box[0]:.4f} / BOX={suppressed_box[1:].tolist()} / IoU={iou_values[i]:.4f}")
             print("-" * 100)
 
         # remove threshold boxes
