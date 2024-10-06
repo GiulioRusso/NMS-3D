@@ -27,7 +27,7 @@ The project consists of the following Python modules:
 
 An application example is contained in:
 
-- **example.py**: The script containing the 3D NMS application example
+- **example.py**: The script that contains the 3D NMS application example
 - **bbox-coords**: The folder that contains the boundig box .csv files before and after the 3D Non-Maximum Suppression.
     - **bbox-coords-before-nms-3d.csv**: example file of bounding boxes to suppress.
     - **bbox-coords-after-nms-3d.csv**: output file after the application of the 3D NMS on bbox-coords-before-nms-3d.csv file.
