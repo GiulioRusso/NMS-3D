@@ -4,6 +4,9 @@ Implementation of 3D non-maximum suppression (NMS-3D) for bounding boxes using P
 
 ![Example](./output/NMS-image-example.png)
 
+## 🤝 Contribution
+👨‍💻 [Ciro Russo, PhD](https://www.linkedin.com/in/ciro-russo-b14056100/)
+
 ## ⬇️ Installation and import
 Now, this code is available with PyPI at https://pypi.org/project/nms-3d/. The package can be installed with:
 
@@ -57,10 +60,6 @@ Install the requirements with:
 ```bash
 pip3 install -r requirements.txt
 ```
-
-## 🤝 Contribution
-👨‍💻 [Ciro Russo, PhD](https://www.linkedin.com/in/ciro-russo-b14056100/)
-
 
 ## ⚖️ License
 
