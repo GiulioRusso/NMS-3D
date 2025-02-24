@@ -20,6 +20,34 @@ def plot_3d_boxes(boxes: torch.Tensor,
     :param html_filename_path: name of the HTML file to save. Default is "./plot_3d_boxes.html".
     :param color: RGB color tuple for the boxes. Default is (255, 0, 0) for red.
     :param show_scores: whether to display the scores on the boxes. Default is True.
+
+    Example:
+
+        import torch
+        from nms_3d import plot_3d_boxes
+
+        # tensor containing 3D bounding boxes with confidence scores
+        boxes = torch.tensor([
+            [0.95, 10, 10, 10, 20, 20, 20],  # high-score box
+            [0.85, 30, 30, 30, 40, 40, 40],  # another box
+            [0.75, 50, 50, 50, 60, 60, 60]   # third box
+        ])
+
+        # set the parameters for visualization
+        title = "3D Bounding Box Visualization"
+        save_html = True  # set to True if you want to save as HTML
+        html_filename_path = "./bounding_boxes_plot.html"
+        color = (0, 255, 0)  # green color for the boxes
+        show_scores = True  # display scores on the boxes
+
+        # call the function to plot the boxes
+        plot_3d_boxes(boxes=boxes, 
+                      title=title, 
+                      save_html=save_html, 
+                      html_filename_path=html_filename_path, 
+                      color=color, 
+                      show_scores=show_scores)
+
     """
 
     # validate the input tensor
