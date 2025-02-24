@@ -16,7 +16,31 @@ def nms_3d(prediction_boxes: torch.Tensor,
     :param debug: Verbose print about the boxes suppression. Default is False.
     
     :return: Tensor containing the selected bounding boxes after applying NMS.
+
+    Example:
+
+        import torch
+        from nms_3d import nms_3d
+
+        # tensor of 3D bounding boxes with scores
+        prediction_boxes = torch.tensor([
+            [0.95, 10, 10, 10, 20, 20, 20],  # high-score box
+            [0.90, 12, 12, 12, 22, 22, 22],  # overlapping box (should be suppressed)
+            [0.85, 50, 50, 50, 60, 60, 60],  # distant box (should be kept)
+            [0.80, 55, 55, 55, 65, 65, 65],  # overlapping with previous (should be suppressed)
+            [0.75, 100, 100, 100, 110, 110, 110]  # another distant box (should be kept)
+        ])
+
+        # define the IoU threshold
+        iou_threshold = 0.5
+
+        # run the 3D Non-Maximum Suppression
+        filtered_boxes = nms_3d(prediction_boxes=prediction_boxes,
+                                iou_threshold=iou_threshold,
+                                debug=True)
+
     """
+
     # configure logging
     if debug:
         logging.basicConfig(level=logging.DEBUG)
