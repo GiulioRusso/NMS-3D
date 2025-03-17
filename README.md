@@ -1,4 +1,6 @@
-# 🧊 3D Non-Maximum Suppression
+<center><h1><img align="center" src="./output/logo.png" width=50px> 3D Non-Maximum Suppression</h1></center>
+
+<br>
 
 Implementation of 3D non-maximum suppression (NMS-3D) for bounding boxes using PyTorch and Plotly.
 
