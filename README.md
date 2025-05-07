@@ -1,4 +1,14 @@
-<center><h1><img align="center" src="./output/logo.png" width=50px> 3D Non-Maximum Suppression</h1></center>
+<div align="center">
+
+  <!-- headline -->
+  <center><h1><img align="center" src="./output/logo.png" width=50px> 3D Non-Maximum Suppression</h1></center>
+
+  <!-- PyPI badge -->
+  <a href="https://pypi.org/project/NMS-3D/">
+    <img src="https://badge.fury.io/py/NMS-3D.svg" alt="PyPI version">
+  </a>
+
+</div>
 
 <br>
 
