@@ -2,6 +2,6 @@ remote_theme: just-the-docs/just-the-docs
 plugins:
   - jekyll-remote-theme
 
-title: NIfTI Dataset Documentation
+title: NMS-3D
 color_scheme: dark
 search_enabled: true
