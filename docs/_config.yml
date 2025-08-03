@@ -1,0 +1,7 @@
+remote_theme: just-the-docs/just-the-docs
+plugins:
+  - jekyll-remote-theme
+
+title: NIfTI Dataset Documentation
+color_scheme: dark
+search_enabled: true
