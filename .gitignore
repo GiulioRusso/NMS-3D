@@ -2,3 +2,4 @@
 .DS_Store
 /nms_3d/__pycache__
 venv
+/output
