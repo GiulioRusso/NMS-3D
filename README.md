@@ -3,9 +3,18 @@
   <!-- headline -->
   <center><h1><img align="center" src="./docs/images/logo.png" width=50px> 3D Non-Maximum Suppression</h1></center>
 
-  <!-- PyPI badge -->
+  <!-- PyPI badges -->
   <a href="https://pypi.org/project/NMS-3D/">
     <img src="https://badge.fury.io/py/NMS-3D.svg" alt="PyPI version">
+  </a>
+  <a href="https://pepy.tech/project/NMS-3D">
+    <img src="https://pepy.tech/badge/NMS-3D" alt="Downloads">
+  </a>
+  <a href="https://pypi.org/project/NMS-3D/">
+    <img src="https://img.shields.io/pypi/pyversions/NMS-3D.svg" alt="Python versions">
+  </a>
+  <a href="https://pypi.org/project/NMS-3D/">
+    <img src="https://img.shields.io/pypi/l/NMS-3D.svg" alt="License">
   </a>
 
 </div>
