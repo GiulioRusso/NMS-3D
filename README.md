@@ -38,6 +38,10 @@ and can be imported as:
 import nms_3d
 ```
 
+## 📦 Package documentation
+
+Package documentation is available [here](https://giuliorusso.github.io/NMS-3D/).
+
 ## 📂 Project Organization
 
 The project consists of the following Python modules:
@@ -67,9 +71,6 @@ python3 example.py
 
 This code will read the bounding box coordinates from bbox-coords-before-nms-3d.csv, perform 3D NMS, and save the result to bbox-coords-after-nms-3d.csv. Also, two 3D plots are saved as HTML files to show the boxes before and after NMS.
 
-## 📦 Package documentation
-
-Package documentation is available [here](https://giuliorusso.github.io/NMS-3D/).
 
 ## 🚨 Requirements
 
