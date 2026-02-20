@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "nms_3d"
+version = "0.1.7"
+description = "3D bounding box NMS and plotting package"
+readme = { file = "README.md", content-type = "text/markdown" }
+
+authors = [
+    { name = "Giulio Russo", email = "russogiulio1998@icloud.com" },
+    { name = "Ciro Russo", email = "ciro.russo2910@gmail.com" }
+]
+
+license = { text = "MIT License" }
+
+requires-python = ">=3.9.5"
+
+dependencies = [
+    "torch>=2.2.2",
+    "plotly>=5.13.1"
+]
+
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent"
+]
+
+[project.urls]
+Homepage = "https://github.com/GiulioRusso/NMS-3D"
+
+[tool.setuptools.packages.find]
+include = ["*"]
+
+[tool.setuptools]
+include-package-data = true
