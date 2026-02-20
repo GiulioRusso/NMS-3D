@@ -1,7 +1,7 @@
 <div align="center">
 
   <!-- headline -->
-  <center><h1><img align="center" src="./docs/images/logo.png" width=50px> 3D Non-Maximum Suppression</h1></center>
+  <center><h1><img align="center" src="https://raw.githubusercontent.com/GiulioRusso/NMS-3D/main/docs/images/logo.png" width=50px> 3D Non-Maximum Suppression</h1></center>
 
   <!-- PyPI badges -->
   <a href="https://pypi.org/project/NMS-3D/">
@@ -23,7 +23,7 @@
 
 Implementation of 3D non-maximum suppression (NMS-3D) for bounding boxes using PyTorch and Plotly.
 
-![Example](./docs/images/NMS-image-example.png)
+<img align="center" src="https://raw.githubusercontent.com/GiulioRusso/NMS-3D/main/docs/images/NMS-image-example.png" width=1000px>
 
 ## ⬇️ Installation and Import
 Now, this code is available with PyPI [here](https://pypi.org/project/nms-3d/). The package can be installed with:
@@ -37,8 +37,6 @@ and can be imported as:
 ```python
 import nms_3d
 ```
-
-
 
 ## 📂 Project Organization
 
@@ -69,6 +67,10 @@ python3 example.py
 
 This code will read the bounding box coordinates from bbox-coords-before-nms-3d.csv, perform 3D NMS, and save the result to bbox-coords-after-nms-3d.csv. Also, two 3D plots are saved as HTML files to show the boxes before and after NMS.
 
+## 📦 Package documentation
+
+Package documentation is available [here](https://giuliorusso.github.io/NMS-3D/).
+
 ## 🚨 Requirements
 
 ```bash
@@ -81,10 +83,6 @@ Install the requirements with:
 ```bash
 pip3 install -r requirements.txt
 ```
-
-## 📦 Package documentation
-
-Package documentation is available [here](https://giuliorusso.github.io/NMS-3D/).
 
 ## 🤝 Contribution
 👨‍💻 [Ciro Russo, PhD](https://www.linkedin.com/in/ciro-russo-b14056100/)
