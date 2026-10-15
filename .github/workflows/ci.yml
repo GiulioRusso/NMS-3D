@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      # Pinned so a new ruff release can't turn CI red on unchanged code; bump deliberately.
+      - run: pip install ruff==0.17.0
+      - run: ruff check nms_3d tests
+
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+      # CPU-only torch on Linux: the default wheel pulls ~2 GB of CUDA libraries.
+      - if: runner.os == 'Linux'
+        run: pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+      # torchvision and MONAI (in [dev]) are the correctness oracles for the NMS tests.
+      - run: pip install -e ".[dev,plot]"
+      - run: pytest -v

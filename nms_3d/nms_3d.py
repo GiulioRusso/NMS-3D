@@ -1,21 +1,32 @@
 # nms_3d/nms_3d.py
 
-import torch
 import logging
+from typing import Union
+
+import torch
+
+logger = logging.getLogger(__name__)
 
 
-def nms_3d(prediction_boxes: torch.Tensor, 
-           iou_threshold: float = 0.5, 
-           debug: bool = False) -> torch.Tensor:
+def nms_3d(prediction_boxes: torch.Tensor,
+           iou_threshold: float = 0.5,
+           debug: bool = False,
+           return_indices: bool = False) -> Union[torch.Tensor, tuple[torch.Tensor, torch.Tensor]]:
     """
     Perform 3D Non-Maximum Suppression on a set of bounding boxes.
-    
-    :param prediction_boxes: Tensor of shape (N, 7), where N is the number of bounding boxes. 
-                             Each row should be of format: 'SCORE', 'X MIN', 'Y MIN', 'Z MIN', 'X MAX', 'Y MAX', 'Z MAX'.
+
+    Boxes are visited in descending score order; each kept box suppresses every remaining box whose IoU
+    with it is strictly greater than ``iou_threshold`` (same rule as ``torchvision.ops.nms``).
+
+    :param prediction_boxes: Tensor of shape (N, 7), where N is the number of bounding boxes. Each row should be
+                             of format: 'SCORE', 'X MIN', 'Y MIN', 'Z MIN', 'X MAX', 'Y MAX', 'Z MAX'.
     :param iou_threshold: Intersection over union threshold between 0 and 1. Default is 0.5.
-    :param debug: Verbose print about the boxes suppression. Default is False.
-    
-    :return: Tensor containing the selected bounding boxes after applying NMS.
+    :param debug: Log every kept and suppressed box at DEBUG level on the ``nms_3d.nms_3d`` logger.
+                  Enable output with e.g. ``logging.basicConfig(level=logging.DEBUG)``. Default is False.
+    :param return_indices: Also return the indices (into ``prediction_boxes``) of the kept boxes. Default is False.
+
+    :return: Tensor of shape (K, 7) with the kept boxes sorted by descending score,
+             or ``(boxes, indices)`` if ``return_indices`` is True.
 
     Example:
 
@@ -25,9 +36,9 @@ def nms_3d(prediction_boxes: torch.Tensor,
         # tensor of 3D bounding boxes with scores
         prediction_boxes = torch.tensor([
             [0.95, 10, 10, 10, 20, 20, 20],  # high-score box
-            [0.90, 12, 12, 12, 22, 22, 22],  # overlapping box (should be suppressed)
+            [0.90, 11, 11, 11, 21, 21, 21],  # overlapping box (should be suppressed)
             [0.85, 50, 50, 50, 60, 60, 60],  # distant box (should be kept)
-            [0.80, 55, 55, 55, 65, 65, 65],  # overlapping with previous (should be suppressed)
+            [0.80, 51, 51, 51, 61, 61, 61],  # overlapping with previous (should be suppressed)
             [0.75, 100, 100, 100, 110, 110, 110]  # another distant box (should be kept)
         ])
 
@@ -41,77 +52,50 @@ def nms_3d(prediction_boxes: torch.Tensor,
 
     """
 
-    # configure logging
-    if debug:
-        logging.basicConfig(level=logging.DEBUG)
-    else:
-        logging.basicConfig(level=logging.INFO)
-
     # input validation
     if not isinstance(prediction_boxes, torch.Tensor):
-        prediction_boxes = torch.tensor(prediction_boxes)
+        prediction_boxes = torch.as_tensor(prediction_boxes)
 
     if prediction_boxes.ndim != 2 or prediction_boxes.size(1) != 7:
-        raise ValueError(f"prediction_boxes must be of shape (N, 7) formatted as: 'SCORE', 'X MIN', 'Y MIN', 'Z MIN', 'X MAX', 'Y MAX', 'Z MAX'. Got {prediction_boxes.shape} instead")
+        raise ValueError("prediction_boxes must be of shape (N, 7) formatted as: 'SCORE', 'X MIN', 'Y MIN', 'Z MIN', "
+                         f"'X MAX', 'Y MAX', 'Z MAX'. Got {tuple(prediction_boxes.shape)} instead")
 
-    # check iou value
     if not (0 <= iou_threshold <= 1):
         raise ValueError(f"iou_threshold must be between 0 and 1. Got {iou_threshold} instead")
 
+    # sort once; stable so ties keep input order
+    order = torch.sort(prediction_boxes[:, 0], descending=True, stable=True).indices
+    coords = prediction_boxes[order, 1:]
+    if not coords.is_floating_point():
+        coords = coords.float()
+    volumes = (coords[:, 3:] - coords[:, :3]).clamp_min(0).prod(-1)
+    boxes = torch.cat([coords, volumes[:, None]], 1)  # one tensor to compact per iteration: 6 coords + volume
 
-    best_boxes_hist = []
+    eps = torch.finfo(coords.dtype).eps
 
-    while prediction_boxes.size(0) > 0:
-        # sort predictions by score in descending order
-        _, sorted_indices = torch.sort(prediction_boxes[:, 0], descending=True)
-        prediction_boxes = prediction_boxes[sorted_indices]
+    # remaining boxes are compacted every iteration, so the top box is always row 0 (no index syncs on GPU)
+    keep = []
+    remaining = torch.arange(coords.size(0), device=coords.device)
+    while remaining.numel() > 0:
+        keep.append(remaining[0])  # the top box is always kept, independently of its self-IoU
+        top, rest = boxes[0], boxes[1:]
+        lo = torch.max(top[:3], rest[:, :3])
+        hi = torch.min(top[3:6], rest[:, 3:6])
+        intersection = (hi - lo).clamp_min(0).prod(-1)
+        # zero-volume boxes give 0/0: clamp the denominator so their IoU is 0 instead of NaN
+        iou = intersection / (top[6] + rest[:, 6] - intersection).clamp_min(eps)
+        suppressed = iou > iou_threshold
 
-        highest_score_box = prediction_boxes[0]
-
-        # calculate intersection coordinates
-        x_min_intersection = torch.max(highest_score_box[1], prediction_boxes[:, 1])
-        y_min_intersection = torch.max(highest_score_box[2], prediction_boxes[:, 2])
-        z_min_intersection = torch.max(highest_score_box[3], prediction_boxes[:, 3])
-        x_max_intersection = torch.min(highest_score_box[4], prediction_boxes[:, 4])
-        y_max_intersection = torch.min(highest_score_box[5], prediction_boxes[:, 5])
-        z_max_intersection = torch.min(highest_score_box[6], prediction_boxes[:, 6])
-
-        # calculate intersection volume
-        intersection_volume = torch.max(torch.tensor(0.0), x_max_intersection - x_min_intersection) * \
-                              torch.max(torch.tensor(0.0), y_max_intersection - y_min_intersection) * \
-                              torch.max(torch.tensor(0.0), z_max_intersection - z_min_intersection)
-
-        # calculate volumes
-        highest_score_box_volume = (highest_score_box[4] - highest_score_box[1]) * \
-                                   (highest_score_box[5] - highest_score_box[2]) * \
-                                   (highest_score_box[6] - highest_score_box[3])
-
-        row_volume = (prediction_boxes[:, 4] - prediction_boxes[:, 1]) * \
-                     (prediction_boxes[:, 5] - prediction_boxes[:, 2]) * \
-                     (prediction_boxes[:, 6] - prediction_boxes[:, 3])
-
-        # calculate iou values
-        iou_values = intersection_volume / (highest_score_box_volume + row_volume - intersection_volume)
-
-        # create a mask to threshold over the boxes that need to be suppressed
-        iou_threshold_mask = iou_values > iou_threshold
-
-        # select the rows with iou > threshold
-        iou_threshold_boxes = prediction_boxes[iou_threshold_mask]
-
-        # save the highest score box into the best boxes list
-        best_boxes_hist.append(iou_threshold_boxes[0])
-
-        # debug print
         if debug:
-            print(f"Highest Score Box: SCORE={highest_score_box[0]:.4f} / BOX={highest_score_box[1:].tolist()}")
-            for i in range(len(iou_threshold_boxes)):
-                suppressed_box = iou_threshold_boxes[i]
-                if (int(iou_values[i]) != 1): # exclude from debug print the intersection between the highest score and itself
-                    print(f"Suppressed Box: SCORE={suppressed_box[0]:.4f} / BOX={suppressed_box[1:].tolist()} / IoU={iou_values[i]:.4f}")
-            print("-" * 100)
+            box = prediction_boxes[order[remaining[0]]]
+            logger.debug("Kept box: SCORE=%.4f / BOX=%s", box[0].item(), box[1:].tolist())
+            for j, value in zip(remaining[1:][suppressed].tolist(), iou[suppressed].tolist()):
+                box = prediction_boxes[order[j]]
+                logger.debug("Suppressed box: SCORE=%.4f / BOX=%s / IoU=%.4f", box[0].item(), box[1:].tolist(), value)
 
-        # remove threshold boxes
-        prediction_boxes = prediction_boxes[~iou_threshold_mask]
+        survivors = ~suppressed
+        remaining, boxes = remaining[1:][survivors], rest[survivors]
 
-    return torch.stack(best_boxes_hist)
+    indices = order[torch.stack(keep)] if keep else order[:0]
+    kept_boxes = prediction_boxes[indices]
+    return (kept_boxes, indices) if return_indices else kept_boxes

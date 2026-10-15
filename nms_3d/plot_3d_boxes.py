@@ -1,20 +1,22 @@
 # nms_3d/plot_3d_boxes.py
 
 import os
+from typing import Union
+
 import torch
-import plotly.graph_objects as go
-from typing import Union, Tuple
+
 
 def plot_3d_boxes(boxes: torch.Tensor, 
                   title: str = "Plot 3D boxes", 
                   save_html: bool = False, 
                   html_filename_path: Union[str, None] = "./plot_3d_boxes.html",
-                  color: Tuple[int, int, int] = (255, 0, 0),
+                  color: tuple[int, int, int] = (255, 0, 0),
                   show_scores: bool = True) -> None:
     """
     Save a 3D plot with the bounding boxes and optionally display each box's score as a label.
 
-    :param boxes: tensor containing 3D bounding box coordinates with columns 'SCORE', 'X MIN', 'Y MIN', 'Z MIN', 'X MAX', 'Y MAX', 'Z MAX'.
+    :param boxes: tensor containing 3D bounding box coordinates with columns
+                  'SCORE', 'X MIN', 'Y MIN', 'Z MIN', 'X MAX', 'Y MAX', 'Z MAX'.
     :param title: title of the plot. Default is "Plot 3D boxes".
     :param save_html: whether to save the plot in an HTML file. Default is False.
     :param html_filename_path: name of the HTML file to save. Default is "./plot_3d_boxes.html".
@@ -49,6 +51,12 @@ def plot_3d_boxes(boxes: torch.Tensor,
                       show_scores=show_scores)
 
     """
+
+    # plotly is an optional dependency: pip install "nms-3d[plot]"
+    try:
+        import plotly.graph_objects as go
+    except ImportError as e:
+        raise ImportError('plot_3d_boxes requires plotly: pip install "nms-3d[plot]"') from e
 
     # validate the input tensor
     if not isinstance(boxes, torch.Tensor):

@@ -1,9 +1,14 @@
+import logging
+
 import torch
 from pandas import read_csv
 import pandas as pd
 from nms_3d import *
 
 def main():
+
+    # show each kept/suppressed box (nms_3d logs them at DEBUG level when debug=True)
+    logging.basicConfig(level=logging.DEBUG, format="%(message)s")
 
     print("| ---------------------------------- |\n"
           "| Non-Maximum Suppression 3D example |\n"

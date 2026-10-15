@@ -21,7 +21,7 @@
 
 <br>
 
-Implementation of 3D non-maximum suppression (NMS-3D) for bounding boxes using PyTorch and Plotly.
+Implementation of 3D non-maximum suppression (NMS-3D) for axis-aligned bounding boxes in PyTorch, with optional Plotly visualisation.
 
 <img align="center" src="https://raw.githubusercontent.com/GiulioRusso/NMS-3D/main/docs/images/NMS-image-example.png" width=1000px>
 
@@ -29,7 +29,8 @@ Implementation of 3D non-maximum suppression (NMS-3D) for bounding boxes using P
 Now, this code is available with PyPI [here](https://pypi.org/project/nms-3d/). The package can be installed with:
 
 ```bash
-pip install nms-3d
+pip install nms-3d          # NMS only, depends on torch
+pip install "nms-3d[plot]"  # also plot_3d_boxes (plotly)
 ```
 
 and can be imported as:
@@ -37,6 +38,22 @@ and can be imported as:
 ```python
 import nms_3d
 ```
+
+Quick use:
+
+```python
+from nms_3d import nms_3d
+
+# boxes: (N, 7) tensor with columns SCORE, X MIN, Y MIN, Z MIN, X MAX, Y MAX, Z MAX
+kept_boxes, kept_indices = nms_3d(boxes, iou_threshold=0.5, return_indices=True)
+```
+
+## 🤔 When to use this vs MONAI
+
+[MONAI](https://monai.io/) already ships 3D box NMS (`monai.data.box_utils.non_max_suppression`) as part of a large
+medical-imaging framework. If MONAI is already in your stack, use it. This package is for when it is not: a
+~100-line, torch-only function with no other dependencies, that gives the same result as MONAI and as
+`torchvision.ops.nms` on flat boxes (both are checked in the test suite).
 
 ## 📦 Package documentation
 
@@ -50,6 +67,8 @@ The project consists of the following Python modules:
 ├── nms_3d/                # The NMS 3D package folder
 │   ├── nms_3d.py          # Function that applies the NMS 3D algorithm.
 │   └── plot_3d_boxes.py   # Function for creating 3D plots of bounding boxes using Plotly.
+│
+├── tests/                 # pytest suite (edge cases, torchvision and MONAI equivalence).
 │
 ├── example.py             # The script that contains the 3D NMS application example.
 │
@@ -75,14 +94,20 @@ This code will read the bounding box coordinates from bbox-coords-before-nms-3d.
 ## 🚨 Requirements
 
 ```bash
-Python>=3.8.0
+Python>=3.9.5
 torch>=2.2.2
-plotly>=5.13.1
+plotly>=5.13.1  # optional, only for plot_3d_boxes
 ```
 
-Install the requirements with:
+Install the requirements of `example.py` with:
 ```bash
-pip3 install -r requirements.txt
+pip3 install -r requirements.txt pandas
+```
+
+Run the tests with:
+```bash
+pip install -e ".[dev,plot]"
+pytest
 ```
 
 ## 🤝 Contribution
